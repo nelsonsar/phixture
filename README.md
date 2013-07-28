@@ -6,6 +6,7 @@ phixture is a fixture generator for PHPUnit.
 Usage
 =====
 
-You can execute:
-
+Just run from command-line:
+```bash
 $ php phpixture.php phpixture:generate db-user db-pass db-host db-name table-name
+```
