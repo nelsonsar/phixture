@@ -1,6 +1,10 @@
 {
     "require": {
-        "symfony/console": "v2.2.3"
+        "doctrine/dbal": ">=v2.4.0",
+        "symfony/console": ">=v2.2.3"
+    },
+    "require-dev": {
+      "phpunit/phpunit": "@stable"
     },
     "autoload": {
         "psr-0": {"Phixture\\": "src/"}

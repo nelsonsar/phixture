@@ -7,9 +7,10 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use Phixture\Database\Configuration;
 use Phixture\Database\ConnectorFactory;
 use Phixture\FixtureGenerator;
+use Doctrine\DBAL\Configuration;
+use Doctrine\DBAL\DriverManager;
 
 class Generate extends Command
 {
@@ -31,19 +32,21 @@ class Generate extends Command
         $databasePassword = $input->getArgument('database-pass');
         $databaseHost = $input->getArgument('database-host');
         $databaseName = $input->getArgument('database-name');
+        $driver = $input->getArgument('driver');
 
-        $configuration = new Configuration(
-            array(
-                'dbname' => $databaseName,
-                'host' => $databaseHost,
-                'user' => $databaseUser,
-                'password' => $databasePassword
-            )
+        $connectionConfiguration = new Configuration;
+
+        $connectionConfigurationParameters = array(
+            'dbname' => $databaseName,
+            'host' => $databaseHost,
+            'user' => $databaseUser,
+            'password' => $databasePassword,
+            'driver' => $driver,
         );
 
-        $connector = ConnectorFactory::getConnector($configuration);
+        $connection = DriverManager::getConnection($connectionConfigurationParameters, $connectionConfiguration);
 
-        $text = FixtureGenerator::generate($connector, $tableName);
+        $text = FixtureGenerator::generate($connection, $tableName);
 
         $output->write($text);
     }

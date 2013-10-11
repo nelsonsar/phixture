@@ -2,13 +2,13 @@
 
 namespace Phixture;
 
-use Phixture\Database\Connector;
+use Doctrine\DBAL\Connection;
 
 class FixtureGenerator
 {
-    public static function generate(Connector $connector, $tableName)
+    public static function generate(Connection $connection, $tableName)
     {
-        $columns = $connector->getSchemaDescriber()->getColumnsFromTable($tableName);
+        $columns = $connection->getSchemaManager()->listTableColumns($tableName);
 
         $dom = new \DOMDocument('1.0', 'UTF-8');
 
@@ -17,13 +17,14 @@ class FixtureGenerator
         $tableElement->setAttribute('name', $tableName);
         foreach ($columns as $column) {
             $columnElement = $dom->createElement('column');
-            $columnElement->nodeValue = $column;
+            $columnElement->nodeValue = $column->getName();
             $tableElement->appendChild($columnElement);
         }
 
         $dataSetElement->appendChild($tableElement);
 
         $dom->appendChild($dataSetElement);
+        $dom->formatOutput = true;
 
         return $dom->saveXML();
     }

@@ -17,36 +17,37 @@ class FixtureGeneratorTest extends \PHPUnit_Framework_TestCase
 </dataset>
 XML;
 
-        $connection = new PDOMock;
+        $connectionParameters = array(
+            'dbname' => 'representative',
+            'host' => 'localhost',
+            'user' => 'test',
+            'password' => 'test',
+            'driver' => 'pdo_mysql',
+        );
 
-        $connectorMock = $this->getMockBuilder('\Phixture\Database\Connector')
-            ->setConstructorArgs(array($connection))
+        $connectionMock = $this->getMockBuilder('\Doctrine\DBAL\Connection')
+            ->setConstructorArgs(array($connectionParameters, new \Doctrine\DBAL\Driver\PDOMySql\Driver))
             ->getMock();
 
-
-        $schemaBuilderMock = $this->getMockBuilder('\Phixture\Database\Table\SchemaDescriber')
-            ->setConstructorArgs(array($connection))
+        $schemaManagerMock = $this->getMockBuilder('\Doctrine\DBAL\Schema\MySqlSchemaManager')
+            ->setConstructorArgs(array($connectionMock))
             ->getMock();
 
-        $schemaBuilderMock->expects($this->once())
-            ->method('getColumnsFromTable')
+        $schemaManagerMock->expects($this->once())
+            ->method('listTableColumns')
             ->with('representative')
-            ->will($this->returnValue(array(
-                'id', 'name', 'phone'
-            )));
+            ->will($this->returnValue(
+                array(
+                    new \Doctrine\DBAL\Schema\Column('id', \Doctrine\DBAL\Types\Type::getType('integer')),
+                    new \Doctrine\DBAL\Schema\Column('name', \Doctrine\DBAL\Types\Type::getType('string')),
+                    new \Doctrine\DBAL\Schema\Column('phone', \Doctrine\DBAL\Types\Type::getType('string')),
+                )
+            ));
 
-        $connectorMock->expects($this->once())
-            ->method('getSchemaDescriber')
-            ->will($this->returnValue($schemaBuilderMock));
+        $connectionMock->expects($this->once())
+            ->method('getSchemaManager')
+            ->will($this->returnValue($schemaManagerMock));
 
-        $this->assertXmlStringEqualsXmlString($xmlFile, FixtureGenerator::generate($connectorMock, 'representative'));
-    }
-}
-
-class PDOMock extends \PDO
-{
-    public function __construct()
-    {
-
+        $this->assertXmlStringEqualsXmlString($xmlFile, FixtureGenerator::generate($connectionMock, 'representative'));
     }
 }

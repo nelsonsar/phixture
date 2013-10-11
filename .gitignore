@@ -1,4 +1,3 @@
 vendor/
-composer.lock
-vagrant/
 *.swp
+composer.phar
