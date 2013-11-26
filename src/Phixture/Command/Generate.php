@@ -22,7 +22,8 @@ class Generate extends Command
             ->addArgument('database-pass', InputArgument::REQUIRED, 'Password of the user passed into database-user')
             ->addArgument('database-host', InputArgument::REQUIRED, 'Host of database that will be used')
             ->addArgument('database-name', InputArgument::REQUIRED, 'Which database will be used to generate the fixture')
-            ->addArgument('table', InputArgument::REQUIRED, 'Which table will be used to generate the fixture');
+            ->addArgument('table', InputArgument::REQUIRED, 'Which table will be used to generate the fixture')
+            ->addArgument('driver', InputArgument::OPTIONAL, 'The connection driver');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
@@ -35,6 +36,10 @@ class Generate extends Command
         $driver = $input->getArgument('driver');
 
         $connectionConfiguration = new Configuration;
+
+        if (empty($driver)) {
+            $driver = 'pdo_mysql';
+        }
 
         $connectionConfigurationParameters = array(
             'dbname' => $databaseName,
