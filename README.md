@@ -11,6 +11,6 @@ How to use?
 
 Just run from command-line:
 ```bash
-$ php phpixture.php phpixture:generate db-user db-pass db-host db-name table-name
+$ php phixture.php phixture:generate db-user db-pass db-host db-name table-name [db-driver]
 ```
 
